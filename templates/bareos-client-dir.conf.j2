@@ -1,5 +1,6 @@
 Director {
   Name = bareos-dir
+  Description = "Allow the configured Director to access this file daemon."
   Password = "[md5]{{ bareos_client_password|hash('md5') }}"
-  TLS Enable = {{ bareos_clients_tls_enable }}
+  TLS Enable = {{ bareos_client_tls_enable|default('No') }}
 }

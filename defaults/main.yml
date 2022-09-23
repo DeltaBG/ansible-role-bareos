@@ -6,7 +6,7 @@ bareos_version: "20"
 bareos_config_dir: "/etc/bareos"
 
 # Bareos roles ( possible vaules: client/director/storage). Default is set to client.
-bares_role: "client"
+bareos_role: "client"
 
 # Bareos client password, used for authentication with the director. Set it to whatever you like
 

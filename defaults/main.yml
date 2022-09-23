@@ -2,6 +2,10 @@
 # Bareos version
 bareos_version: "20"
 
+# File permissions
+bareos_user_name: bareos
+bareos_group_name: bareos
+
 # Bareos config dir
 bareos_config_dir: "/etc/bareos"
 
@@ -19,8 +23,26 @@ bareos_client_tls_enable: "No"
 # Enable/disable auto prune of volumes
 bareos_client_auto_prune: "Yes"
 
+# Pool options, need to be set in host_vars for individual client control
+bareos_client_pool_type: "Backup"
+bareos_client_auto_prune: "Yes"
+bareos_client_pool_recycle: "Yes"
+bareos_client_pool_volume_retention: "7d"
+bareos_client_pool_file_retention: "14d"
+bareos_client_pool_job_retention: "14d"
+bareos_client_pool_use_duration: "7d"
+bareos_client_pool_recycle_oldest_volume: "Yes"
+bareos_client_pool_action_on_purge: "truncate"
+bareos_client_pool_max_volumes: "2"
+
 # Max concurrent jobs
 bareos_client_maximum_concurrent_jobs: "10"
 
 # Bandwidth restriction
 bareos_client_maximum_bandwidth_per_job: "90 m/s"
+
+# Host group, containing all bareos clients
+bareos_clients_group_name: bareos_clients
+
+# Default password for accessing the WebUI as a client, can be defined as a host_var as well
+bareos_client_webui_password: "SecretPassword1234"

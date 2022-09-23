@@ -11,4 +11,4 @@
       skip: true
 
 # Setup/install tasks.
-- include_tasks: setup.yml
+- include_tasks: setup-repositories.yml

@@ -1,0 +1,105 @@
+---
+# Install BareOS client packages
+- name: Install Bareos client packages (RedHat)
+  yum:
+    name: "bareos-client"
+    state: installed
+  when: ansible_os_family == "RedHat"
+  tags: [bareos-client]
+
+- name: Install Bareos client packages (Debian)
+  apt:
+    name: "bareos-client"
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  tags: [bareos-client]
+
+- name: Check if /usr/bin/mysql is present
+  stat:
+    path: "/usr/bin/mysql"
+  register: mysql
+
+- name: Check if /usr/sbin/mysql is present
+  stat:
+    path: "/usr/bin/mysql"
+  register: sbin_mysql
+
+- name: Install bareos-filedaemon-python-plugin (RedHat, Bareos<=19)
+  yum:
+    name: "bareos-filedaemon-python-plugin-{{ bareos_version }}"
+    state: installed
+  when: >
+    ansible_os_family == "RedHat" and 
+    (mysql.stat.exists or sbin_mysql.stat.exists) and
+    bareos_version != "20"
+
+- name: Install bareos-filedaemon-python-plugin (RedHat, Bareos >= 20)
+  yum:
+    name: "{{ item }}"
+    state: installed
+  loop:
+    - bareos-filedaemon-python2-plugin
+  when: >
+    ansible_os_family == "RedHat" and 
+    (mysql.stat.exists or sbin_mysql.stat.exists) and
+    bareos_version == "20"
+
+- name: Install bareos-filedaemon-python-plugin (Debian, Bareos <= 19)
+  apt:
+    name: "bareos-filedaemon-python-plugin"
+    state: present
+    update_cache: yes
+  when: >
+    (ansible_os_family == "Debian" and (mysql.stat.exists or sbin_mysql.stat.exists)) and
+    bareos_version != "20"
+
+- name: Install bareos-filedaemon-python-plugin (Debian, Bareos >= 20)
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - bareos-filedaemon-python2-plugin
+  when: >
+    (ansible_os_family == "Debian" and (mysql.stat.exists or sbin_mysql.stat.exists)) and
+    bareos_version == "20"
+
+- name: Enable and start the services
+  service:
+    name: bareos-fd
+    enabled: yes
+    state: started
+  tags: [bareos-client]
+
+- name: Ensure MySQL plugin directory exists
+  file:
+    path: "{{ bareos_plugins_location }}"
+    state: directory
+    mode: 0755
+
+- name: Upload MySQL plugins
+  copy:
+    src: "{{ item }}"
+    dest: "{{ bareos_plugins_location }}"
+    mode: 0755
+    owner: root
+    group: root
+  loop:
+    - BareosFdMySQLclass.py
+    - bareos-fd-mysql.py
+
+# Configure BareOS client
+- name: Configure director in {{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf (Client)
+  template:
+    src: "bareos-client-dir.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf"
+  notify: "Restart bareos-fd"
+  tags: [bareos-client]
+
+- name: Configure filedaemon in {{ bareos_config_dir }}/bareos-fd.d/client/myself.conf
+  template:
+    src: "myself-client.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-fd.d/client/myself.conf"
+  notify: "Restart bareos-fd"
+  tags: [bareos-client]

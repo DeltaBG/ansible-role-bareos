@@ -1,2 +1,23 @@
 ---
+# Bareos version
 bareos_version: "20"
+
+# Bareos config dir
+bareos_config_dir: "/etc/bareos"
+
+# Bareos roles ( possible vaules: client/director/storage). Default is set to client.
+bares_role: "client"
+
+# Bareos client password, used for authentication with the director. Set it to whatever you like
+
+bareos_client_password: "SecretPassword1234"
+
+# Whether of not TLS authentication of client with director should be enabled. Default set to "No"
+
+bareos_clients_tls_enable: "No"
+
+# Max concurrent jobs
+client_maximum_concurrent_jobs: "10"
+
+# Bandwidth restriction
+client_maximum_bandwidth_per_job: "90 m/s"

@@ -90,16 +90,85 @@
     - bareos-fd-mysql.py
 
 # Configure BareOS client
-- name: Configure director in {{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf (Client)
+- name: Configure client in {{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf (Client)
   template:
     src: "bareos-client-dir.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf"
-  notify: "Restart bareos-fd"
+  notify: "restart bareos-fd"
+  when: "groups.bareos_director[0] not in inventory_hostname"
   tags: [bareos-client]
 
-- name: Configure filedaemon in {{ bareos_config_dir }}/bareos-fd.d/client/myself.conf
+- name: Configure client in {{ bareos_config_dir }}/bareos-fd.d/client/myself.conf
   template:
     src: "myself-client.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-fd.d/client/myself.conf"
-  notify: "Restart bareos-fd"
+  notify: "restart bareos-fd"
+  when: "groups.bareos_director[0] not in inventory_hostname"
   tags: [bareos-client]
+
+# Configure BareOS client in the director
+- name: Configure client pools in {{ bareos_config_dir }}/bareos-dir.d/pool/*.conf (Director)
+  template:
+    src: "pools-director.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/pool/{{ item }}.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  register: _need_for_director_reload
+  loop: "{{ groups[bareos_clients_group_name] }}"
+  delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
+  when: item in inventory_hostname
+  tags: [add-bareos-client, bareos-dir]
+
+- name: Configure clients in {{ bareos_config_dir }}/bareos-dir.d/client/*.conf (Director)
+  template:
+    src: "client-director.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/client/{{ item }}.conf"
+  register: _need_for_director_reload
+  loop: "{{ groups[bareos_clients_group_name] }}"
+  delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
+  when: item in inventory_hostname
+  tags: [add-bareos-client, bareos-dir]
+
+- name: Configure client jobs in {{ bareos_config_dir }}/bareos-dir.d/job/*.conf (Director)
+  template:
+    src: "jobs-director.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/job/{{ item }}.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  register: _need_for_director_reload
+  loop: "{{ groups[bareos_clients_group_name] }}"
+  delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
+  when: item in inventory_hostname
+  tags: [add-bareos-client, bareos-dir]
+
+- name: Configure user ACL profiles in {{ bareos_config_dir }}/bareos-dir.d/profile/ (Director)
+  template:
+    src: acl-profiles-director.conf.j2
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/profile/{{ item }}.conf"
+  loop: "{{ groups[bareos_clients_group_name] }}"
+  delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
+  when: >
+    item in inventory_hostname and
+    "hostvars[item]['client_acl_allow_hosts'] is defined"
+  register: _need_for_director_reload
+  tags: [add-bareos-client, bareos-dir, bareos-acl]
+
+- name: Configure users for accessing WebUI in {{ bareos_config_dir }}/bareos-dir.d/console/ (Director)
+  template:
+    src: acl-users-director.conf.j2
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/console/{{ item }}.conf"
+  loop: "{{ groups[bareos_clients_group_name] }}"
+  delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
+  when: >
+    item in inventory_hostname and
+    "hostvars[item]['client_acl_allow_hosts'] is defined"
+  register: _need_for_director_reload
+  tags: [add-bareos-client, bareos-dir, bareos-acl]
+
+- name: Reload bareos-dir
+  shell: "echo reload | bconsole"
+  delegate_to: "{{ groups.bareos_director[0] }}"
+  when: _need_for_director_reload.changed
+  run_once: True

@@ -1,0 +1,7 @@
+# Restricted console used by bareos-webui for user {{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }}
+Console {
+Name = {{ hostvars[item]['client_webui_username']|default(inventory_hostname) }}
+Password = "{{ hostvars[item]['bareos_client_webui_password']|default('') }}"
+Profile = "{{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }}"
+TLS Enable = {{ hostvars[item]['bareos_client_tls_enable']|default(bareos_client_tls_enable) }}
+}

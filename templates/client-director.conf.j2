@@ -1,0 +1,7 @@
+Client {
+  Name = {{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }}
+  Address = {{ hostvars[item]['bareos_client_address']|default(ansible_host) }}
+  Password = {{ bareos_client_password }}
+  TLS Enable = {{ hostvars[item]['bareos_client_tls_enable']|default(bareos_client_tls_enable) }}
+  Auto Prune = {{ hostvars[item]['bareos_client_auto_prune']|default(bareos_client_auto_prune) }}
+}

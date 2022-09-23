@@ -1,0 +1,38 @@
+#
+# bareos-webui {{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }} profile resource
+#
+Profile {
+  Name = "{{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }}"
+
+  # Define access to the following commands
+  CommandACL = {{ bareos_acl_commands|default('>') }}
+
+  # Define access to the following job resources
+  Job ACL = {{ bareos_acl_jobs|default(inventory_hostname) }}
+
+  # Define access to the following schedule resources
+  Schedule ACL = {{ bareos_acl_schedules|default('Weekly_01am') }}
+
+  # Define access to the following catalog resources
+  Catalog ACL = {{ bareos_acl_catalogs|default('*all*') }}
+
+  # Define access to the following pool resources
+  Pool ACL = {{ bareos_acl_pools|default(inventory_hostname) }}
+
+  {% if bareos_acl_storages is defined and bareos_acl_storages|length  %}
+  # Define access to the following storage resources
+  Storage ACL = {{ bareos_acl_storages }}
+  {% endif %}
+
+  # Define access to the following client resources
+  Client ACL = {{ bareos_acl_clients|default(inventory_hostname) }}
+
+  # Define access to the following fileset resources
+  FileSet ACL = {{ bareos_acl_fileset|default('LinuxAll') }}
+
+  {% if bareos_acl_allow_hosts is defined and bareos_acl_allow_hosts|length %}
+  # Allow access to restore to the following filesystem location
+  Where ACL = {{ bareos_acl_allow_hosts|join(", ") }}
+  {% endif %}
+  
+}

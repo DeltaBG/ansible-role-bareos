@@ -1,0 +1,15 @@
+Pool {
+  Name = {{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }}
+  Pool Type = {{ hostvars[item]['bareos_client_pool_type']|default('Backup') }}
+  Recycle = {{ hostvars[item]['bareos_client_pool_recycle']|default(bareos_client_pool_recycle) }}
+  Auto Prune = {{ hostvars[item]['bareos_client_auto_prune']|default(bareos_client_auto_prune) }}
+  Volume Retention = {{ hostvars[item]['bareos_client_pool_volume_retention']|default(bareos_client_pool_volume_retention) }}
+  File Retention = {{ hostvars[item]['bareos_client_pool_file_retention']|default(bareos_client_pool_file_retention) }}
+  Job Retention = {{ hostvars[item]['bareos_client_pool_job_retention']|default(bareos_client_pool_job_retention) }}
+  Label Format = "{{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }}-"
+  Volume Use Duration = {{ hostvars[item]['bareos_client_pool_use_duration']|default(bareos_client_pool_use_duration) }}
+  Recycle Oldest Volume = {{ hostvars[item]['bareos_client_pool_recycle_oldest_volume']|default(bareos_client_pool_recycle_oldest_volume) }}
+  Action On Purge = {{ hostvars[item]['bareos_client_pool_action_on_purge']|default(bareos_client_pool_action_on_purge) }}
+  Storage = {{ hostvars[item]['bareos_client_remote_storage'] }}
+  Maximum Volumes = {{ hostvars[item]['bareos_client_pool_max_volumes']|default(bareos_client_pool_max_volumes) }}
+}

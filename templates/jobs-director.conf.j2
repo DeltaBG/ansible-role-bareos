@@ -1,0 +1,25 @@
+Job {
+  Name = {{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }}
+  Type = {{ hostvars[item]['bareos_client_pool_type']|default('Backup') }}
+  Level = Full
+  Client = {{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }}
+  FileSet= {{ hostvars[item]['bareos_client_fileset']|default('LinuxAll') }}
+  Messages = Standard
+  Storage = {{ hostvars[item]['bareos_client_remote_storage'] }}
+  Pool = {{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }}
+  Schedule = {{ hostvars[item]['bareos_client_schedule']|default('Weekly_01am') }}
+  Priority = {{ hostvars[item]['bareos_client_priority']|default(20, true) }}
+  Allow Mixed Priority = {{ bareos_jobs_allow_mixed_priority|default('yes') }}
+  Reschedule On Error = {{ bareos_jobs_reschedule_on_error|default('yes') }}
+  Reschedule Interval = {{ bareos_jobs_reschedule_interval|default(180) }}
+  Reschedule Times = {{ bareos_jobs_reschedule_times|default(2) }}
+  Max Wait Time = {{ bareos_jobs_max_wait_time|default('5 minutes') }}
+  # Override max run time via host_vars
+  {% if hostvars[item]['bareos_max_run_time'] is defined %}Max Run Time = {{ hostvars[item]['bareos_max_run_time'] }}
+  {% endif %}
+  Run Script {
+    Console = ".bvfs_update jobid=%i"
+    RunsWhen = After
+    RunsOnClient = No
+  }
+}

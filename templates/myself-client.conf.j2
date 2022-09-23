@@ -1,7 +1,7 @@
 Client {
   Name = {{ inventory_hostname }}
-  Maximum Concurrent Jobs = {{ client_maximum_concurrent_jobs }}
-  Maximum Bandwidth Per Job = {{ client_maximum_bandwidth_per_job }}
+  Maximum Concurrent Jobs = {{ bareos_client_maximum_concurrent_jobs }}
+  Maximum Bandwidth Per Job = {{ bareos_client_maximum_bandwidth_per_job }}
 
   # remove comment from "Plugin Directory" to load plugins from specified directory.
   # if "Plugin Names" is defined, only the specified plugins will be loaded,

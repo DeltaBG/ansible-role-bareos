@@ -14,10 +14,13 @@ bareos_client_password: "SecretPassword1234"
 
 # Whether of not TLS authentication of client with director should be enabled. Default set to "No"
 
-bareos_clients_tls_enable: "No"
+bareos_client_tls_enable: "No"
+
+# Enable/disable auto prune of volumes
+bareos_client_auto_prune: "Yes"
 
 # Max concurrent jobs
-client_maximum_concurrent_jobs: "10"
+bareos_client_maximum_concurrent_jobs: "10"
 
 # Bandwidth restriction
-client_maximum_bandwidth_per_job: "90 m/s"
+bareos_client_maximum_bandwidth_per_job: "90 m/s"

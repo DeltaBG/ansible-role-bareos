@@ -51,9 +51,11 @@
   apt_key:
     url: "http://download.bareos.org/bareos/release/{{ bareos_version }}/xUbuntu_{{ ansible_distribution_version }}/Release.key"
     state: present
+  when: ansible_os_family == "Debian"
 
 - name: Install Bareos repository (Ubuntu)
   apt_repository:
     repo: "deb http://download.bareos.org/bareos/release/{{ bareos_version }}/xUbuntu_{{ ansible_distribution_version }} /"
     state: present
     filename: "bareos"
+  when: ansible_os_family == "Debian"

@@ -17,4 +17,5 @@
 
 # Client tasks.
 - include_tasks: bareos-client.yml
+  when: bareos_role == "client"
   tags: [bareos-client]

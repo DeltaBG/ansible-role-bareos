@@ -4,7 +4,9 @@
   yum:
     name: "bareos-client"
     state: installed
-  when: ansible_os_family == "RedHat"
+  when: >
+    groups.bareos_director[0] not in inventory_hostname and
+    ansible_os_family == "RedHat"
   tags: [bareos-client]
 
 - name: Install Bareos client packages (Debian)
@@ -12,18 +14,37 @@
     name: "bareos-client"
     state: present
     update_cache: yes
-  when: ansible_os_family == "Debian"
+  when: >
+    groups.bareos_director[0] not in inventory_hostname and
+    ansible_os_family == "Debian"
   tags: [bareos-client]
 
 - name: Check if /usr/bin/mysql is present
   stat:
     path: "/usr/bin/mysql"
   register: mysql
+  when: groups.bareos_director[0] not in inventory_hostname
 
 - name: Check if /usr/sbin/mysql is present
   stat:
     path: "/usr/bin/mysql"
   register: sbin_mysql
+  when: groups.bareos_director[0] not in inventory_hostname
+
+- name: Upload old MySQL plugins (Bareos < 20)
+  copy:
+    src: "{{ item }}"
+    dest: "{{ __bareos_plugins_location }}"
+    mode: 0755
+    owner: root
+    group: root
+  loop:
+    - bareos-19/BareosFdMySQLclass.py
+    - bareos-19/bareos-fd-mysql.py
+  when: >
+    groups.bareos_director[0] not in inventory_hostname and
+    (mysql.stat.exists or sbin_mysql.stat.exists) and
+    bareos_version != "20"
 
 - name: Install bareos-filedaemon-python-plugins (Bareos == 20)
   package:

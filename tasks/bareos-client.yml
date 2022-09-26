@@ -45,8 +45,8 @@
     owner: root
     group: root
   loop:
-    - BareosFdMySQLclass-19.py
-    - bareos-fd-mysql-19.py
+    - bareos-19/BareosFdMySQLclass.py
+    - bareos-19/bareos-fd-mysql.py
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
     bareos_version != "20"

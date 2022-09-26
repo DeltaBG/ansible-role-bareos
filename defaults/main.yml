@@ -100,7 +100,7 @@ bareos_filesets:
     options:
       backed_up_directories:
         - "/"
-        - 'Plugin = "python:module_path=/usr/lib64/bareos/plugins:module_name=bareos-fd-mysql"'
+        - 'Plugin = "python:module_path=/usr/lib64/bareos/plugins:module_name=bareos_mysql_dump"'
       include: |
         Signature = MD5 # calculate md5 checksum per file
         One FS = No     # change into other filessytems

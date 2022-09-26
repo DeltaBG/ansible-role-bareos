@@ -4,12 +4,22 @@
     name: bareos-fd
     state: restarted
 
-- name: reload bareos-dir
-  shell: "echo reload | bconsole"
-  delegate_to: "{{ groups.bareos_director[0] }}"
-  run_once: True
+- name: restart bareos-dir
+  service:
+    name: bareos-dir
+    state: restarted
 
 - name: restart bareos-sd
   service:
     name: bareos-sd
     state: restarted
+
+- name: restart httpd
+  service:
+    name: httpd
+    state: restarted
+
+- name: reload bareos-dir
+  shell: "echo reload | bconsole"
+  delegate_to: "{{ groups.bareos_director[0] }}"
+  run_once: True

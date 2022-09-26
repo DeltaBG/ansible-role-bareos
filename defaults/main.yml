@@ -40,7 +40,7 @@ bareos_client_maximum_bandwidth_per_job: "90 m/s"
 
 # Host groups, containing all bareos clients and storages
 bareos_clients_group_name: bareos_clients
-bareos_clients_group_name: bareos_storages
+bareos_storages_group_name: bareos_storages
 
 # Default password for accessing the WebUI as a client, can be defined as a host_var as well
 bareos_client_webui_password: "SecretPassword1234"
@@ -140,3 +140,11 @@ bareos_storage_max_bandwidth_per_job: "900 m/s"
 bareos_storage_maximum_connections: "1000"
 # Where volumes will be stored on remote storages, can be overriden with host_vars.
 bareos_storage_bareos_archive_device: "/var/lib/bareos/storage"
+
+# WebUI vars
+# Whether or not to have WebUI installed and configured
+bareos_webui_enabled: True
+
+bareos_webui_username: admin
+bareos_webui_password: SecretWebuiPassword1234
+bareos_webui_config_dir: /etc/bareos-webui

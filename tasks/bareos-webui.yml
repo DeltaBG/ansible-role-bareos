@@ -1,0 +1,23 @@
+---
+- name: Install Bareos WebUI package
+  package:
+    name: bareos-webui
+    state: installed
+  tags: [bareos-webui]
+
+- name: Configure basic WebUI authetication (Webui)
+  template:
+    src: "webui/admin.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/console/admin.conf"
+  notify:
+    - "restart bareos-dir"
+    - "restart bareos-fd"
+    - "restart bareos-sd"
+    - "restart httpd"
+  tags: [bareos-webui]
+
+- name: Configure WebUI directors (Webui)
+  template:
+    src: "webui/directors.ini.j2"
+    dest: "{{ bareos_webui_config_dir }}/directors.ini"
+  tags: [bareos-webui]

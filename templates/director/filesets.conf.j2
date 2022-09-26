@@ -2,7 +2,6 @@ FileSet {
   Name = "{{ item.name }}"
   {% if item.options.plugins is defined %}Include {
   {% for plugin in item.options.plugins %}
-  Include {
             Plugin = "{{ plugin.plugin }}"
                      "module_path={{ plugin.module_path }}"
                      "module_name={{ plugin.module_name }}"

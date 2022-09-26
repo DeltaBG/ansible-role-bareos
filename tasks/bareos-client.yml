@@ -126,20 +126,20 @@
     owner: "{{ bareos_user_name }}"
     group: "{{ bareos_group_name }}"
     mode: 0640
-  register: _need_for_director_reload
   loop: "{{ groups[bareos_clients_group_name] }}"
   delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
   when: item in inventory_hostname
+  notify: reload bareos-dir
   tags: [add-bareos-client, bareos-dir]
 
 - name: Configure clients in {{ bareos_config_dir }}/bareos-dir.d/client/*.conf (Director)
   template:
     src: "client-director.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-dir.d/client/{{ item }}.conf"
-  register: _need_for_director_reload
   loop: "{{ groups[bareos_clients_group_name] }}"
   delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
   when: item in inventory_hostname
+  notify: reload bareos-dir
   tags: [add-bareos-client, bareos-dir]
 
 - name: Configure client jobs in {{ bareos_config_dir }}/bareos-dir.d/job/*.conf (Director)
@@ -149,10 +149,10 @@
     owner: "{{ bareos_user_name }}"
     group: "{{ bareos_group_name }}"
     mode: 0640
-  register: _need_for_director_reload
   loop: "{{ groups[bareos_clients_group_name] }}"
   delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
   when: item in inventory_hostname
+  notify: reload bareos-dir
   tags: [add-bareos-client, bareos-dir]
 
 - name: Configure user ACL profiles in {{ bareos_config_dir }}/bareos-dir.d/profile/ (Director)
@@ -164,7 +164,7 @@
   when: >
     item in inventory_hostname and
     "hostvars[item]['client_acl_allow_hosts'] is defined"
-  register: _need_for_director_reload
+  notify: reload bareos-dir
   tags: [add-bareos-client, bareos-dir, bareos-acl]
 
 - name: Configure users for accessing WebUI in {{ bareos_config_dir }}/bareos-dir.d/console/ (Director)
@@ -176,11 +176,5 @@
   when: >
     item in inventory_hostname and
     "hostvars[item]['client_acl_allow_hosts'] is defined"
-  register: _need_for_director_reload
+  notify: reload bareos-dir
   tags: [add-bareos-client, bareos-dir, bareos-acl]
-
-- name: Reload bareos-dir
-  shell: "echo reload | bconsole"
-  delegate_to: "{{ groups.bareos_director[0] }}"
-  when: _need_for_director_reload.changed
-  run_once: True

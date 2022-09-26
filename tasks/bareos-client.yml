@@ -5,7 +5,6 @@
     name: "bareos-client"
     state: installed
   when: >
-    groups.bareos_director[0] not in inventory_hostname and
     ansible_os_family == "RedHat"
   tags: [bareos-client]
 
@@ -15,7 +14,6 @@
     state: present
     update_cache: yes
   when: >
-    groups.bareos_director[0] not in inventory_hostname and
     ansible_os_family == "Debian"
   tags: [bareos-client]
 
@@ -23,13 +21,11 @@
   stat:
     path: "/usr/bin/mysql"
   register: mysql
-  when: groups.bareos_director[0] not in inventory_hostname
 
 - name: Check if /usr/sbin/mysql is present
   stat:
     path: "/usr/bin/mysql"
   register: sbin_mysql
-  when: groups.bareos_director[0] not in inventory_hostname
 
 - name: Upload old MySQL plugins (Bareos < 20)
   copy:
@@ -42,7 +38,6 @@
     - bareos-19/BareosFdMySQLclass.py
     - bareos-19/bareos-fd-mysql.py
   when: >
-    groups.bareos_director[0] not in inventory_hostname and
     (mysql.stat.exists or sbin_mysql.stat.exists) and
     bareos_version != "20"
 
@@ -55,7 +50,6 @@
     - bareos-filedaemon-python2-plugin
     - bareos-filedaemon-python3-plugin
   when: >
-    groups.bareos_director[0] not in inventory_hostname and
     (mysql.stat.exists or sbin_mysql.stat.exists) and
     bareos_version == "20"
 
@@ -67,7 +61,6 @@
     owner: "{{ bareos_user_name }}"
     group: "{{ bareos_group_name }}"
   when: >
-    groups.bareos_director[0] not in inventory_hostname and
     (mysql.stat.exists or sbin_mysql.stat.exists) and
     bareos_version == "20"
 
@@ -82,7 +75,6 @@
     - "bareos-20/__init__.py"
     - "bareos-20/BareosFdMySQLclass.py"
   when: >
-    groups.bareos_director[0] not in inventory_hostname and
     (mysql.stat.exists or sbin_mysql.stat.exists) and
     bareos_version == "20"
 
@@ -91,7 +83,6 @@
     name: bareos-fd
     enabled: yes
     state: started
-  when: "groups.bareos_director[0] not in inventory_hostname"
   tags: [bareos-client]
 
 - name: Ensure MySQL plugin directory exists
@@ -99,7 +90,6 @@
     path: "{{ __bareos_plugins_location }}"
     state: directory
     mode: 0755
-  when: "groups.bareos_director[0] not in inventory_hostname"
 
 # Configure BareOS client
 - name: Configure client in {{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf (Client)
@@ -107,7 +97,6 @@
     src: "client/bareos-client-dir.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf"
   notify: "restart bareos-fd"
-  when: "groups.bareos_director[0] not in inventory_hostname"
   tags: [bareos-client]
 
 - name: Configure client in {{ bareos_config_dir }}/bareos-fd.d/client/myself.conf
@@ -115,7 +104,6 @@
     src: "client/myself-client.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-fd.d/client/myself.conf"
   notify: "restart bareos-fd"
-  when: "groups.bareos_director[0] not in inventory_hostname"
   tags: [bareos-client]
 
 # Configure BareOS client in the director

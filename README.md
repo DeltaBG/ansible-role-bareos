@@ -4,7 +4,7 @@ Role for installing and managing BareOS director, storages and client.
 
 ## Requirements
 
-This role requires you to have Apache and PostgreSQL (>=12.10) preinstalled on the director host. Installation and configuration of these pacakges is not subject of this role.
+This role requires you to have Apache and PostgreSQL (>=12.10) preinstalled on the director host. Installation and configuration of these pacakges is not subject of this role. Also, the hostgroup in your inventory file which contains the director should be named `bareos_director`.
 
 ## Role variables
 
@@ -104,7 +104,7 @@ Running the playbook: `ansible-playbook -i inventory_file.ini site.yml -t bareos
 
 ```
 
-Running the playbook: `ansible-playbook -i inventory_file.ini site.yml -t bareos-director-reconfigure`
+Running the playbook: `ansible-playbook -i inventory_file.ini site.yml -t bareos-director-reconfigure --limit=bareos_director`
 
 ## License
 

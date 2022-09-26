@@ -6,7 +6,7 @@
     state: installed
   when: >
     ansible_os_family == "RedHat"
-  tags: [bareos-client]
+  tags: [bareos-client, bareos-add-client]
 
 - name: Install Bareos client packages (Debian)
   apt:
@@ -15,17 +15,19 @@
     update_cache: yes
   when: >
     ansible_os_family == "Debian"
-  tags: [bareos-client]
+  tags: [bareos-client, bareos-add-client]
 
 - name: Check if /usr/bin/mysql is present
   stat:
     path: "/usr/bin/mysql"
   register: mysql
+  tags: [bareos-client, bareos-add-client]
 
 - name: Check if /usr/sbin/mysql is present
   stat:
     path: "/usr/bin/mysql"
   register: sbin_mysql
+  tags: [bareos-client, bareos-add-client]
 
 - name: Upload old MySQL plugins (Bareos < 20)
   copy:
@@ -40,6 +42,7 @@
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
     bareos_version != "20"
+  tags: [bareos-client, bareos-add-client]
 
 - name: Install bareos-filedaemon-python-plugins (Bareos == 20)
   package:
@@ -52,6 +55,7 @@
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
     bareos_version == "20"
+  tags: [bareos-client, bareos-add-client]
 
 - name: Create plugins directory (Bareos == 20)
   file:
@@ -63,6 +67,7 @@
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
     bareos_version == "20"
+  tags: [bareos-client, bareos-add-client]
 
 - name: Upload new MySQL plugins (Bareos == 20)
   copy:
@@ -77,6 +82,7 @@
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
     bareos_version == "20"
+  tags: [bareos-client, bareos-add-client]
 
 - name: Enable and start the services
   service:
@@ -90,6 +96,7 @@
     path: "{{ __bareos_plugins_location }}"
     state: directory
     mode: 0755
+  tags: [bareos-client, bareos-add-client]
 
 # Configure BareOS client
 - name: Configure client in {{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf (Client)
@@ -97,14 +104,14 @@
     src: "client/bareos-client-dir.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf"
   notify: "restart bareos-fd"
-  tags: [bareos-client]
+  tags: [bareos-client, bareos-add-client]
 
 - name: Configure client in {{ bareos_config_dir }}/bareos-fd.d/client/myself.conf
   template:
     src: "client/myself-client.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-fd.d/client/myself.conf"
   notify: "restart bareos-fd"
-  tags: [bareos-client]
+  tags: [bareos-client, bareos-add-client]
 
 # Configure BareOS client in the director
 - name: Configure client pools in {{ bareos_config_dir }}/bareos-dir.d/pool/*.conf (Director)
@@ -118,7 +125,7 @@
   delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
   when: item in inventory_hostname
   notify: reload bareos-dir
-  tags: [add-bareos-client, bareos-dir]
+  tags: [bareos-client, bareos-add-client]
 
 - name: Configure clients in {{ bareos_config_dir }}/bareos-dir.d/client/*.conf (Director)
   template:
@@ -128,7 +135,7 @@
   delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
   when: item in inventory_hostname
   notify: reload bareos-dir
-  tags: [add-bareos-client, bareos-dir]
+  tags: [bareos-client, bareos-add-client]
 
 - name: Configure client jobs in {{ bareos_config_dir }}/bareos-dir.d/job/*.conf (Director)
   template:
@@ -141,7 +148,7 @@
   delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
   when: item in inventory_hostname
   notify: reload bareos-dir
-  tags: [add-bareos-client, bareos-dir]
+  tags: [bareos-client, bareos-add-client]
 
 - name: Configure user ACL profiles in {{ bareos_config_dir }}/bareos-dir.d/profile/ (Director)
   template:
@@ -153,7 +160,7 @@
     item in inventory_hostname and
     "hostvars[item]['client_acl_allow_hosts'] is defined"
   notify: reload bareos-dir
-  tags: [add-bareos-client, bareos-dir, bareos-acl]
+  tags: [bareos-client, bareos-add-client]
 
 - name: Configure users for accessing WebUI in {{ bareos_config_dir }}/bareos-dir.d/console/ (Director)
   template:
@@ -165,4 +172,4 @@
     item in inventory_hostname and
     "hostvars[item]['client_acl_allow_hosts'] is defined"
   notify: reload bareos-dir
-  tags: [add-bareos-client, bareos-dir, bareos-acl]
+  tags: [bareos-client, bareos-add-client]

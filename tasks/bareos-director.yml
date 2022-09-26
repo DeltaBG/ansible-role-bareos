@@ -4,24 +4,29 @@
   stat:
     path: /usr/lib/bareos/installed
   register: bareos_installed
+  tags: [bareos-director]
 
 - name: Install Bareos packages
   package:
     name: bareos, bareos-database-postgresql
     state: installed
   when: not bareos_installed.stat.exists
+  tags: [bareos-director]
 
 - name: Create PostgreSQL database
   shell: su - postgres -c '/usr/lib/bareos/scripts/create_bareos_database postgresql'
   when: not bareos_installed.stat.exists
+  tags: [bareos-director]
 
 - name: Create initial PostgreSQL tables
   shell: su - postgres -c '/usr/lib/bareos/scripts/make_bareos_tables postgresql'
   when: not bareos_installed.stat.exists
+  tags: [bareos-director]
 
 - name: Grant PostgreSQL user privileges
   shell: su - postgres -c '/usr/lib/bareos/scripts/grant_bareos_privileges postgresql'
   when: not bareos_installed.stat.exists
+  tags: [bareos-director]
 
 - name: Change database type to PostgreSQL for catalog resource
   lineinfile:
@@ -29,6 +34,7 @@
     regexp: "dbdriver = .*"
     line: "dbdriver = postgresql"
   when: not bareos_installed.stat.exists
+  tags: [bareos-director]
 
 - name: Enable and start Bareos services
   service:
@@ -39,6 +45,7 @@
     - 'bareos-dir'
     - 'bareos-sd'
     - 'bareos-fd'
+  tags: [bareos-director]
 
 # Remote storages configuration
 - name: Configure storage locations in {{ bareos_config_dir }}/bareos-dir.d/storage/*.conf (Director)
@@ -50,7 +57,7 @@
     mode: 0640
   loop: "{{ bareos_remote_storages }}"
   notify: reload bareos-dir
-  tags: [bareos-dir]
+  tags: [bareos-director, bareos-director-reconfigure, bareos-storage]
 
 # Local storage configuration
 - name: Configure local {{ bareos_config_dir }}/bareos-sd.d/director/bareos-dir.conf (Director)
@@ -61,7 +68,7 @@
     group: "{{ bareos_group_name }}"
     mode: 0640
   notify: restart bareos-sd
-  tags: [bareos-storage]
+  tags: [bareos-director, bareos-director-reconfigure, bareos-storage]
 
 # Other director configuration, related to jobs, schedules
 - name: Configure messages in {{ bareos_config_dir }}/bareos-dir.d/messages/Standard.conf
@@ -72,7 +79,7 @@
     group: "{{ bareos_group_name }}"
     mode: 0640
   notify: reload bareos-dir
-  tags: [bareos-dir]
+  tags: [bareos-director, bareos-director-reconfigure]
 
 - name: Configure filesets in {{ bareos_config_dir }}/bareos-dir.d/fileset/*.conf (Director)
   template:
@@ -83,7 +90,7 @@
     mode: 0640
   loop: "{{ bareos_filesets }}"
   notify: reload bareos-dir
-  tags: [bareos-dir]
+  tags: [bareos-director, bareos-director-reconfigure]
 
 - name: Configure schedules in {{ bareos_config_dir }}/bareos-dir.d/schedule/*.conf (Director)
   template:
@@ -94,4 +101,4 @@
     mode: 0640
   loop: "{{ bareos_schedules }}"
   notify: reload bareos-dir
-  tags: [bareos-dir]
+  tags: [bareos-director, bareos-director-reconfigure]

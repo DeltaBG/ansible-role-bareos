@@ -20,9 +20,6 @@ bareos_client_password: "SecretClientPassword1234"
 
 bareos_client_tls_enable: "No"
 
-# Enable/disable auto prune of volumes
-bareos_client_auto_prune: "Yes"
-
 # Pool options, need to be set in host_vars for individual client control
 bareos_client_pool_type: "Backup"
 bareos_client_auto_prune: "Yes"

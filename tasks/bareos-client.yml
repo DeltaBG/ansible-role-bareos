@@ -104,7 +104,7 @@
 # Configure BareOS client
 - name: Configure client in {{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf (Client)
   template:
-    src: "bareos-client-dir.conf.j2"
+    src: "client/bareos-client-dir.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf"
   notify: "restart bareos-fd"
   when: "groups.bareos_director[0] not in inventory_hostname"
@@ -112,7 +112,7 @@
 
 - name: Configure client in {{ bareos_config_dir }}/bareos-fd.d/client/myself.conf
   template:
-    src: "myself-client.conf.j2"
+    src: "client/myself-client.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-fd.d/client/myself.conf"
   notify: "restart bareos-fd"
   when: "groups.bareos_director[0] not in inventory_hostname"
@@ -121,7 +121,7 @@
 # Configure BareOS client in the director
 - name: Configure client pools in {{ bareos_config_dir }}/bareos-dir.d/pool/*.conf (Director)
   template:
-    src: "pools-director.conf.j2"
+    src: "director-client/pools-director.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-dir.d/pool/{{ item }}.conf"
     owner: "{{ bareos_user_name }}"
     group: "{{ bareos_group_name }}"
@@ -134,7 +134,7 @@
 
 - name: Configure clients in {{ bareos_config_dir }}/bareos-dir.d/client/*.conf (Director)
   template:
-    src: "client-director.conf.j2"
+    src: "director-client/client-director.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-dir.d/client/{{ item }}.conf"
   loop: "{{ groups[bareos_clients_group_name] }}"
   delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
@@ -144,7 +144,7 @@
 
 - name: Configure client jobs in {{ bareos_config_dir }}/bareos-dir.d/job/*.conf (Director)
   template:
-    src: "jobs-director.conf.j2"
+    src: "director-client/jobs-director.conf.j2"
     dest: "{{ bareos_config_dir }}/bareos-dir.d/job/{{ item }}.conf"
     owner: "{{ bareos_user_name }}"
     group: "{{ bareos_group_name }}"
@@ -157,7 +157,7 @@
 
 - name: Configure user ACL profiles in {{ bareos_config_dir }}/bareos-dir.d/profile/ (Director)
   template:
-    src: acl-profiles-director.conf.j2
+    src: director-client/acl-profiles-director.conf.j2
     dest: "{{ bareos_config_dir }}/bareos-dir.d/profile/{{ item }}.conf"
   loop: "{{ groups[bareos_clients_group_name] }}"
   delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file
@@ -169,7 +169,7 @@
 
 - name: Configure users for accessing WebUI in {{ bareos_config_dir }}/bareos-dir.d/console/ (Director)
   template:
-    src: acl-users-director.conf.j2
+    src: director-client/acl-users-director.conf.j2
     dest: "{{ bareos_config_dir }}/bareos-dir.d/console/{{ item }}.conf"
   loop: "{{ groups[bareos_clients_group_name] }}"
   delegate_to: "{{ groups.bareos_director[0] }}" # This group/host needs to be defined in inventory file

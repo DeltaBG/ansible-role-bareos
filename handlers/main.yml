@@ -8,3 +8,8 @@
   shell: "echo reload | bconsole"
   delegate_to: "{{ groups.bareos_director[0] }}"
   run_once: True
+
+- name: restart bareos-sd
+  service:
+    name: bareos-sd
+    state: restarted

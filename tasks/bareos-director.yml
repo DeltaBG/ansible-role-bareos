@@ -1,0 +1,56 @@
+---
+# Remote storages configuration
+- name: Configure storage locations in {{ bareos_config_dir }}/bareos-dir.d/storage/*.conf (Director)
+  template:
+    src: "director/storage.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/storage/{{ item.name }}.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  loop: "{{ bareos_remote_storages }}"
+  notify: reload bareos-dir
+  tags: [bareos-dir]
+
+# Local storage configuration
+- name: Configure local {{ bareos_config_dir }}/bareos-sd.d/director/bareos-dir.conf (Director)
+  template:
+    src: "director/bareos-dir.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-sd.d/director/bareos-dir.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  notify: restart bareos-sd
+  tags: [bareos-storage]
+
+# Other director configuration, related to jobs, schedules
+- name: Configure messages in {{ bareos_config_dir }}/bareos-dir.d/messages/Standard.conf
+  template:
+    src: "director/messages-standard.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/messages/Standard.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  notify: reload bareos-dir
+  tags: [bareos-dir]
+
+- name: Configure filesets in {{ bareos_config_dir }}/bareos-dir.d/fileset/*.conf (Director)
+  template:
+    src: "director/filesets.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/fileset/{{ item.name }}.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  loop: "{{ bareos_filesets }}"
+  notify: reload bareos-dir
+  tags: [bareos-dir]
+
+- name: Configure schedules in {{ bareos_config_dir }}/bareos-dir.d/schedule/*.conf (Director)
+  template:
+    src: "director/schedules.yml.j2"
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/schedule/{{ item.name }}.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  loop: "{{ bareos_schedules }}"
+  notify: reload bareos-dir
+  tags: [bareos-dir]

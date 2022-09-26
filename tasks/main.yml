@@ -15,6 +15,11 @@
 # Setup/install tasks.
 - include_tasks: setup-repositories.yml
 
+# Director-specific tasks
+- include_tasks: bareos-director.yml
+  when: groups.bareos_director[0] in inventory_hostname
+  tags: [bareos-director]
+
 # Client tasks.
 - include_tasks: bareos-client.yml
   when: groups.bareos_director[0] not in inventory_hostname

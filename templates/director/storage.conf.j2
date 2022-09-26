@@ -1,0 +1,11 @@
+Storage {
+  Name = {{ item.name }}
+  Address = {{ item.address }}
+  Password = "{{ bareos_storage_password }}"
+  {% for n in range(1, (item.bareos_max_concurrent_jobs + 1)) %}Device = FileStorage{{ n }}
+  {% endfor %}
+  Maximum Concurrent Jobs = {{ item.bareos_max_concurrent_jobs }}
+  Maximum Bandwidth Per Job = {{ item.bareos_max_bandwidth_per_job }}
+  Media Type = {{ item.bareos_media_type }}
+  TLS Enable = {{ item.bareos_tls_enable }}
+}

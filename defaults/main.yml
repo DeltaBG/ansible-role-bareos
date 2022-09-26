@@ -14,7 +14,7 @@ bareos_role: "client"
 
 # Bareos client password, used for authentication with the director. Set it to whatever you like
 
-bareos_client_password: "SecretPassword1234"
+bareos_client_password: "SecretClientPassword1234"
 
 # Whether of not TLS authentication of client with director should be enabled. Default set to "No"
 
@@ -49,3 +49,89 @@ bareos_client_webui_password: "SecretPassword1234"
 
 # Define access to the following commands
 bareos_acl_commands: "!.bvfs_clear_cache, !.exit, !configure, !purge, !prune, !reload,  !create, !update, !delete, !disable, !enable, !show, !status, !run, !rerun, !restore, !cancel, !mount, !umount, !unmount, !export, !import, !move, !release, !automount, !add, !label, !relabel, !truncate, !sqlquery, !query, !.sql, !setdebug, !trace, !setbandwidth, !setip, !resolve, *all*"
+
+# Remote storages
+bareos_remote_storages:
+  - name: storage1
+    address: "127.0.0.1"
+    device: '/var/lib/bareos/storage'
+    bareos_max_bandwidth_per_job: "90 m/s"
+    bareos_max_concurrent_jobs: 10
+    bareos_media_type: File
+    bareos_tls_enable: "no"
+
+# Remote storage password, used for authentication
+bareos_storage_password: "SecretStoragePassword1234"
+
+# Messages from bareos will be sent from this email
+bareos_from_mail: admin@example.com
+
+# Fileset definitions
+bareos_filesets:
+  - name: "LinuxAll"
+    description: "Backup all regular filesystems, determined by filesystem type."
+    options:
+      backed_up_directories:
+        - "/"
+      include: |
+        Signature = MD5 # calculate md5 checksum per file
+        One FS = No     # change into other filessytems
+        FS Type = btrfs
+        FS Type = ext2  # filesystems of given types will be backed up
+        FS Type = ext3  # others will be ignored
+        FS Type = ext4
+        FS Type = reiserfs
+        FS Type = jfs
+        FS Type = xfs
+        FS Type = zfs
+      exclude: |
+        File = /var/lib/bareos/storage
+        File = /proc
+        File = /tmp
+        File = /var/tmp
+        File = /var/log/
+        File = /var/log/journal
+        File = /var/cache
+        File = /var/log/virtualmin
+        File = /.journal
+        File = /.fsck
+      exclude_dir_containing:
+        - '.nobackup'
+  - name: "LinuxAllwithSQL_EL"
+    description: "EL based OS only. Backup all filesystem except /var/lib/mysql. This is handled by a plugin"
+    options:
+      backed_up_directories:
+        - "/"
+        - 'Plugin = "python:module_path=/usr/lib64/bareos/plugins:module_name=bareos-fd-mysql"'
+      include: |
+        Signature = MD5 # calculate md5 checksum per file
+        One FS = No     # change into other filessytems
+        FS Type = btrfs
+        FS Type = ext2  # filesystems of given types will be backed up
+        FS Type = ext3  # others will be ignored
+        FS Type = ext4
+        FS Type = reiserfs
+        FS Type = jfs
+        FS Type = xfs
+        FS Type = zfs
+      exclude: |
+        File = /var/lib/bareos/storage
+        File = /proc
+        File = /tmp
+        File = /var/tmp
+        File = /var/cache
+        File = /var/log/
+        File = /var/log/journal
+        File = /var/log/virtualmin
+        File = /.journal
+        File = /.fsck
+        File = /var/lib/mysql
+      exclude_dir_containing:
+        - '.nobackup'
+
+# Schedules definitions
+bareos_schedules:
+  - name: "Weekly_01am"
+    cycle: |
+      Run = Full sat at 01:00
+      Run = Incremental mon-fri at 01:00

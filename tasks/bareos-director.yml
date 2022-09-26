@@ -1,4 +1,45 @@
 ---
+# Bareos installation
+- name: Check if Bareos has been already installed
+  stat:
+    path: /usr/lib/bareos/installed
+  register: bareos_installed
+
+- name: Install Bareos packages
+  package:
+    name: bareos, bareos-database-postgresql
+    state: installed
+  when: not bareos_installed.stat.exists
+
+- name: Create PostgreSQL database
+  shell: su - postgres -c '/usr/lib/bareos/scripts/create_bareos_database postgresql'
+  when: not bareos_installed.stat.exists
+
+- name: Create initial PostgreSQL tables
+  shell: su - postgres -c '/usr/lib/bareos/scripts/make_bareos_tables postgresql'
+  when: not bareos_installed.stat.exists
+
+- name: Grant PostgreSQL user privileges
+  shell: su - postgres -c '/usr/lib/bareos/scripts/grant_bareos_privileges postgresql'
+  when: not bareos_installed.stat.exists
+
+- name: Change database type to PostgreSQL for catalog resource
+  lineinfile:
+    path: "{{ bareos_config_dir }}/bareos-dir.d/catalog/MyCatalog.conf"
+    regexp: "dbdriver = .*"
+    line: "dbdriver = postgresql"
+  when: not bareos_installed.stat.exists
+
+- name: Enable and start Bareos services
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop:
+    - 'bareos-dir'
+    - 'bareos-sd'
+    - 'bareos-fd'
+
 # Remote storages configuration
 - name: Configure storage locations in {{ bareos_config_dir }}/bareos-dir.d/storage/*.conf (Director)
   template:

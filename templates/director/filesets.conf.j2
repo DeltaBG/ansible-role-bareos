@@ -1,17 +1,22 @@
 FileSet {
   Name = "{{ item.name }}"
+   {% if item.options.backed_up_directories is defined %}{% for backup_dir in item.options.backed_up_directories %}
+  Include  {
+  {% if 'Plugin' in backup_dir %}
+                Plugin = "python:"
+                         "module_path=/usr/lib64/bareos/plugins:"
+                         "module_name=bareos_mysql_dump:"
+        }
+  {% else %}File = {{ backup_dir }}
+  {% endif %}
+  {% endfor %}
+  {% endif %}
   {% if item.description is defined %}Description = "Backup all regular filesystems, determined by filesystem type."
   {% endif %}
   {% if item.options.include is defined %}Include {
     Options {
       {{ item.options.include }}
     }{% endif %}
-    {% if item.options.backed_up_directories is defined %}{% for backup_dir in item.options.backed_up_directories %}
-    {% if 'Plugin' in backup_dir %}{{ backup_dir }}
-    {% else %}File = {{ backup_dir }}
-    {% endif %}
-    {% endfor %}
-    {% endif %}
 
     {% if item.options.exclude_dir_containing is defined %}{% for exclude_dir in item.options.exclude_dir_containing %}Exclude Dir Containing = {{ exclude_dir }}
     {% endfor %}

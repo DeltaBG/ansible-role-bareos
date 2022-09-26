@@ -4,7 +4,7 @@ bareos_version: "20"
 
 # File permissions
 bareos_user_name: bareos
-bareos_group_name: bareos
+bareos_group_name: "{{ bareos_user_name }}"
 
 # Bareos config dir
 bareos_config_dir: "/etc/bareos"

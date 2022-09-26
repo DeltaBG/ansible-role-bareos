@@ -46,3 +46,6 @@ bareos_clients_group_name: bareos_clients
 
 # Default password for accessing the WebUI as a client, can be defined as a host_var as well
 bareos_client_webui_password: "SecretPassword1234"
+
+# Define access to the following commands
+bareos_acl_commands: "!.bvfs_clear_cache, !.exit, !configure, !purge, !prune, !reload,  !create, !update, !delete, !disable, !enable, !show, !status, !run, !rerun, !restore, !cancel, !mount, !umount, !unmount, !export, !import, !move, !release, !automount, !add, !label, !relabel, !truncate, !sqlquery, !query, !.sql, !setdebug, !trace, !setbandwidth, !setip, !resolve, *all*"

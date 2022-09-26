@@ -5,7 +5,7 @@ Profile {
   Name = "{{ hostvars[item]['bareos_client_hostname']|default(inventory_hostname) }}"
 
   # Define access to the following commands
-  CommandACL = {{ bareos_acl_commands|default('>') }}
+  CommandACL = {{ bareos_acl_commands|default('!.bvfs_clear_cache, !.exit, !configure, !purge, !prune, !reload,  !create, !update, !delete, !disable, !enable, !show, !status, !run, !rerun, !restore, !cancel, !mount, !umount, !unmount, !export, !import, !move, !release, !automount, !add, !label, !relabel, !truncate, !sqlquery, !query, !.sql, !setdebug, !trace, !setbandwidth, !setip, !resolve, *all*') }}
 
   # Define access to the following job resources
   Job ACL = {{ bareos_acl_jobs|default(inventory_hostname) }}

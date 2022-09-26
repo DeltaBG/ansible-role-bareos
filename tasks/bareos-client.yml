@@ -34,28 +34,43 @@
     - bareos-filedaemon-python2-plugin
     - bareos-filedaemon-python3-plugin
   when: >
-    mysql.stat.exists or sbin_mysql.stat.exists and
+    groups.bareos_director[0] not in inventory_hostname and
+    (mysql.stat.exists or sbin_mysql.stat.exists) and
     bareos_version == "20"
 
-- name: Upload old MySQL plugins (Bareos < 20)
+- name: Create plugins directory (Bareos == 20)
+  file:
+    path: "{{ __bareos_plugins_location }}/bareos_mysql_dump"
+    state: directory
+    mode: 0755
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+  when: >
+    groups.bareos_director[0] not in inventory_hostname and
+    (mysql.stat.exists or sbin_mysql.stat.exists) and
+    bareos_version == "20"
+
+- name: Upload new MySQL plugins (Bareos == 20)
   copy:
     src: "{{ item }}"
-    dest: "{{ __bareos_plugins_location }}"
+    dest: "{{ __bareos_plugins_location }}/bareos_mysql_dump"
     mode: 0755
-    owner: root
-    group: root
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
   loop:
-    - bareos-19/BareosFdMySQLclass.py
-    - bareos-19/bareos-fd-mysql.py
+    - "bareos-20/__init__.py"
+    - "bareos-20/BareosFdMySQLclass.py"
   when: >
+    groups.bareos_director[0] not in inventory_hostname and
     (mysql.stat.exists or sbin_mysql.stat.exists) and
-    bareos_version != "20"
+    bareos_version == "20"
 
 - name: Enable and start the services
   service:
     name: bareos-fd
     enabled: yes
     state: started
+  when: "groups.bareos_director[0] not in inventory_hostname"
   tags: [bareos-client]
 
 - name: Ensure MySQL plugin directory exists
@@ -63,6 +78,7 @@
     path: "{{ __bareos_plugins_location }}"
     state: directory
     mode: 0755
+  when: "groups.bareos_director[0] not in inventory_hostname"
 
 # Configure BareOS client
 - name: Configure client in {{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf (Client)

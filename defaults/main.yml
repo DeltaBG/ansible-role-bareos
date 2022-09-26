@@ -41,8 +41,9 @@ bareos_client_maximum_concurrent_jobs: "10"
 # Bandwidth restriction
 bareos_client_maximum_bandwidth_per_job: "90 m/s"
 
-# Host group, containing all bareos clients
+# Host groups, containing all bareos clients and storages
 bareos_clients_group_name: bareos_clients
+bareos_clients_group_name: bareos_storages
 
 # Default password for accessing the WebUI as a client, can be defined as a host_var as well
 bareos_client_webui_password: "SecretPassword1234"
@@ -135,3 +136,10 @@ bareos_schedules:
     cycle: |
       Run = Full sat at 01:00
       Run = Incremental mon-fri at 01:00
+
+# Bareos storage configuration
+bareos_storage_max_concurrent_jobs: 10
+bareos_storage_max_bandwidth_per_job: "900 m/s"
+bareos_storage_maximum_connections: "1000"
+# Where volumes will be stored on remote storages, can be overriden with host_vars.
+bareos_storage_bareos_archive_device: "/var/lib/bareos/storage"

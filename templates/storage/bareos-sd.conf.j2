@@ -1,0 +1,14 @@
+Storage {
+  Name = {{ inventory_hostname }}
+  Maximum Concurrent Jobs = {{ bareos_storage_max_concurrent_jobs|default('10') }}
+  Maximum Bandwidth Per Job = {{ bareos_storage_max_bandwidth_per_job|default('900 m/s') }}
+  Maximum Connections = {{ bareos_storage_maximum_connections|default('1000') }}
+  TLS Enable = {{ bareos_storage_tls_enable|default('No') }}
+
+  # remove comment from "Plugin Directory" to load plugins from specified directory.
+  # if "Plugin Names" is defined, only the specified plugins will be loaded,
+  # otherwise all storage plugins (*-sd.so) from the "Plugin Directory".
+  #
+  # Plugin Directory = "/usr/lib64/bareos/plugins"
+  # Plugin Names = ""
+}

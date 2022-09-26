@@ -1,0 +1,15 @@
+{% for n in range(1, (bareos_storage_max_concurrent_jobs + 1)) %}Device {
+  Name = FileStorage{{ n }}
+  Media Type = {{ bareos_storage_bareos_archive_type|default('File') }}
+  Archive Device = {{ bareos_storage_bareos_archive_device|default('/var/lib/bareos/storage')}}
+  LabelMedia = {{ bareos_storage_label_media|default('Yes') }};                   # lets Bareos label unlabeled media
+  Random Access = {{ bareos_storage_random_access|default('Yes') }};
+  AutomaticMount = {{ bareos_storage_automatic_mount|default('Yes') }};               # when device opened, read it
+  RemovableMedia = {{ bareos_storage_removable_media|default('No') }};
+  AlwaysOpen = {{ bareos_storage_always_open|default('No') }};
+  Description = "File device FileStorage{{ n }}. A connecting Director must have the same Name and MediaType."
+  Maximum Concurrent Jobs = 1
+
+}
+
+{% endfor %}

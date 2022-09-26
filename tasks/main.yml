@@ -20,6 +20,11 @@
   when: groups.bareos_director[0] in inventory_hostname
   tags: [bareos-director]
 
+- include_tasks: bareos-storage.yml
+  loop: "{{ groups[bareos_clients_group_name] }}"
+  when: item in inventory_hostname
+  tags: [bareos-storage]
+
 # Client tasks.
 - include_tasks: bareos-client.yml
   when: groups.bareos_director[0] not in inventory_hostname

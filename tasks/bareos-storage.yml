@@ -1,0 +1,54 @@
+---
+# Bareos storage daemon installation
+- name: Install storage daemon package
+  package:
+    name: bareos-sd
+    state: installed
+  tags: [bareos-storage]
+
+- name: Enable and start storage daemon service
+  service:
+    name: bareos-sd
+    enabled: yes
+  tags: [bareos-storage]
+
+# Bareos storage service configuration
+- name: Configure {{ bareos_config_dir }}/bareos-sd.d/director/bareos-dir.conf (Storage)
+  template:
+    src: "storage/bareos-storage-dir.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-sd.d/director/bareos-dir.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  notify: restart bareos-sd
+  tags: [bareos-storage]
+
+- name: Configure {{ bareos_config_dir }}/bareos-sd.d/bareos-sd.conf (Storage)
+  template:
+    src: "storage/bareos-sd.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-sd.d/storage/bareos-sd.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  notify: restart bareos-sd
+  tags: [bareos-storage]
+
+- name: Configure {{ bareos_config_dir }}/bareos-sd.d/device/FileStorage.conf (Storage)
+  template:
+    src: "storage/FileStorage.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-sd.d/device/FileStorage.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  notify: restart bareos-sd
+  tags: [bareos-storage]
+
+- name: Ensure that storage directory exists and is with correct permissions
+  file:
+    path: "{{ bareos_storage_bareos_archive_device }}"
+    state: directory
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0755   
+  notify: restart bareos-sd
+  tags: [bareos-storage]

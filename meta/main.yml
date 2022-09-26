@@ -1,0 +1,22 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: bareos
+  author: Valentin Dzhorov
+  description: Role for installing and managing BareOS director, storages and client.
+  company: "Delta.BG"
+  license: "MIT"
+  min_ansible_version: 2.4
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - bareos

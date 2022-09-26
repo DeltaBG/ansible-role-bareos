@@ -39,7 +39,12 @@ Running the playbook: `ansible-playbook -i inventory_file.ini site.yml -t bareos
 ### Removing a client (remove-client.yml)
 
 ```yaml
-- hosts: bareos_director
+- name: Remove a bareos client configuration and backups
+  hosts: bareos_director
+  handlers:
+    - name: reload bareos-dir
+      shell: "echo reload | bconsole"
+      delegate_to: "{{ groups.bareos_director[0] }}"
   tasks:
     - name: Remove client configuration
       file:

@@ -1,13 +1,13 @@
 FileSet {
   Name = "{{ item.name }}"
-  {% if item.options.plugins is defined %}{% for plugin in item.options.plugins %}
+  {% if item.options.plugins is defined %}Include {
+  {% for plugin in item.options.plugins %}
   Include {
             Plugin = "{{ plugin.plugin }}"
                      "module_path={{ plugin.module_path }}"
                      "module_name={{ plugin.module_name }}"
-        }
-  {% else %}File = {{ backup_dir }}
-  {% endif %}
+  {% endfor %}
+  }
   {% endif %}
   {% if item.options.backed_up_directories is defined %}{% for backup_dir in item.options.backed_up_directories %}
     {% if 'Plugin' in backup_dir %}{{ backup_dir }}

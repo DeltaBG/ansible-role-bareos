@@ -16,6 +16,7 @@
 
 # Setup/install tasks.
 - include_tasks: setup-repositories.yml
+  tags: [bareos-client, bareos-add-client]
 
 # Director-specific tasks
 - include_tasks: bareos-director.yml

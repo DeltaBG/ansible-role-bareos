@@ -149,3 +149,14 @@ bareos_webui_enabled: True
 bareos_webui_username: admin
 bareos_webui_password: SecretWebuiPassword1234
 bareos_webui_config_dir: /etc/bareos-webui
+
+# Default RestoreFile job configuration
+bareos_restorefiles_default_name: "RestoreFiles"
+bareos_restorefiles_default_client: "bareos-fd"
+bareos_restorefiles_default_fileset: "LinuxAll"
+bareos_restorefiles_default_storage: "File"
+bareos_restorefiles_default_pool: "Incremental"
+bareos_restorefiles_default_messages: "Standard"
+bareos_restorefiles_default_restore_dir: "/tmp/bareos-restores"
+bareos_restorefiles_default_priority: 1
+bareos_restorefiles_default_mixed_priority: "Yes"

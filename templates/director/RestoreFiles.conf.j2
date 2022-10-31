@@ -1,0 +1,13 @@
+Job {
+  Name = "{{ bareos_restorefiles_default_name|default('RestoreFiles') }}""
+  Description = "Standard Restore template. Only one such job is needed for all standard Jobs/Clients/Storage ..."
+  Type = Restore
+  Client = {{ bareos_restorefiles_default_client|default('bareos-fd') }}
+  FileSet = "{{ bareos_restorefiles_default_fileset|default('LinuxAll') }}"
+  Storage = {{ bareos_restorefiles_default_storage|default('File') }}
+  Pool = {{ bareos_restorefiles_default_pool|default('Incremental') }}
+  Messages = {{ bareos_restorefiles_default_messages|default('Standard') }}
+  Where = {{ bareos_restorefiles_default_restore_dir|default('/tmp/bareos-restores') }}
+  Priority = {{ bareos_restorefiles_default_priority(default(1)) }}
+  Allow Mixed Priority = {{ bareos_restorefiles_default_mixed_priority|default('Yes') }}
+}

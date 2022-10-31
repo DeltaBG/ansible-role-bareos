@@ -102,3 +102,15 @@
   loop: "{{ bareos_schedules }}"
   notify: reload bareos-dir
   tags: [bareos-director, bareos-director-reconfigure]
+
+# RestoreFiles job configuration
+- name: Configure RestoreFiles job {{ bareos_config_dir }}/bareos-dir.d/job/RestoreFiles.conf (Director)
+  template:
+    src: "director/RestoreFiles.conf.j2"
+    dest: "{{ bareos_config_dir }}/bareos-dir.d/job/RestoreFiles.conf"
+    owner: "{{ bareos_user_name }}"
+    group: "{{ bareos_group_name }}"
+    mode: 0640
+  loop: "{{ bareos_schedules }}"
+  notify: reload bareos-dir
+  tags: [bareos-director, bareos-director-reconfigure, bareos-restorefiles]

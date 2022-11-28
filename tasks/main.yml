@@ -33,7 +33,7 @@
 # Storages tasks
 - include_tasks: bareos-storage.yml
   loop: "{{ groups[bareos_storages_group_name] }}"
-  when: item in inventory_hostname
+  when: item == inventory_hostname
   tags: [bareos-storage]
 
 # Client tasks

@@ -54,7 +54,19 @@
     - bareos-filedaemon-python3-plugin
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
-    (bareos_version != "20" and bareos_version != "current")
+    bareos_version == "20"
+  tags: [bareos-client, bareos-add-client]
+
+- name: Install bareos-filedaemon-python-plugins (Bareos == current)
+  package:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - bareos-filedaemon-python3-plugin
+  when: >
+    (mysql.stat.exists or sbin_mysql.stat.exists) and
+    bareos_version == "current"
   tags: [bareos-client, bareos-add-client]
 
 - name: Create plugins directory (Bareos == 20)

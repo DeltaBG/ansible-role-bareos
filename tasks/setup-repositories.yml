@@ -57,6 +57,7 @@
     url: "http://download.bareos.org/bareos/release/{{ bareos_version }}/xUbuntu_{{ ansible_distribution_version }}/Release.key"
     state: present
   when: ansible_distribution == "Ubuntu"
+  tags: [bareos-client, bareos-add-client]
 
 - name: Install Bareos repository (Ubuntu)
   apt_repository:

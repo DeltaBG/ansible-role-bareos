@@ -41,7 +41,7 @@
     - bareos-19/bareos-fd-mysql.py
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
-    (bareos_version != "20" or bareos_version !="current")
+    (bareos_version != "20" and bareos_version != "current")
   tags: [bareos-client, bareos-add-client]
 
 - name: Install bareos-filedaemon-python-plugins (Bareos == 20)
@@ -54,7 +54,7 @@
     - bareos-filedaemon-python3-plugin
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
-    (bareos_version == "20" or bareos_version == "current")
+    (bareos_version != "20" and bareos_version != "current")
   tags: [bareos-client, bareos-add-client]
 
 - name: Create plugins directory (Bareos == 20)
@@ -66,7 +66,7 @@
     group: "{{ bareos_group_name }}"
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
-    (bareos_version == "20" or bareos_version == "current")
+    (bareos_version != "20" and bareos_version != "current")
   tags: [bareos-client, bareos-add-client]
 
 - name: Upload new MySQL plugins (Bareos == 20)
@@ -81,7 +81,7 @@
     - "bareos-20/BareosFdMySQLclass.py"
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
-    (bareos_version == "20" or bareos_version == "current")
+    (bareos_version != "20" and bareos_version != "current")
   tags: [bareos-client, bareos-add-client]
 
 - name: Enable and start the services

@@ -85,7 +85,7 @@
     group: "{{ bareos_group_name }}"
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
-    (bareos_version != "20" and bareos_version != "current")
+    (bareos_version == "20" or bareos_version == "current")
   tags: [bareos-client, bareos-add-client]
 
 - name: Upload new MySQL plugins (Bareos == 20)
@@ -100,7 +100,7 @@
     - "bareos-20/BareosFdMySQLclass.py"
   when: >
     (mysql.stat.exists or sbin_mysql.stat.exists) and
-    (bareos_version != "20" and bareos_version != "current")
+    (bareos_version == "20" or bareos_version == "current")
   tags: [bareos-client, bareos-add-client]
 
 - name: Enable and start the services

@@ -69,6 +69,13 @@
     bareos_version == "current"
   tags: [bareos-client, bareos-add-client]
 
+- name: Ensure MySQL plugin directory exists
+  file:
+    path: "{{ __bareos_plugins_location }}"
+    state: directory
+    mode: 0755
+  tags: [bareos-client, bareos-add-client]
+
 - name: Create plugins directory (Bareos == 20)
   file:
     path: "{{ __bareos_plugins_location }}/bareos_mysql_dump"
@@ -102,13 +109,6 @@
     enabled: yes
     state: started
   tags: [bareos-client]
-
-- name: Ensure MySQL plugin directory exists
-  file:
-    path: "{{ __bareos_plugins_location }}"
-    state: directory
-    mode: 0755
-  tags: [bareos-client, bareos-add-client]
 
 # Configure BareOS client
 - name: Configure client in {{ bareos_config_dir }}/bareos-fd.d/director/bareos-dir.conf (Client)

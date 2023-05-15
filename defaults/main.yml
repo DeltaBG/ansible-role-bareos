@@ -1,6 +1,6 @@
 ---
 # Bareos version
-bareos_version: "20"
+bareos_version: "current" # Currently the only available option is "current"
 
 # File permissions
 bareos_user_name: bareos

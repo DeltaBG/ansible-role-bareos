@@ -67,8 +67,8 @@
     owner: "{{ bareos_user_name }}"
     group: "{{ bareos_group_name }}"
   loop:
-    - "bareos-20/__init__.py"
-    - "bareos-20/BareosFdMySQLclass.py"
+    - "bareos-current/__init__.py"
+    - "bareos-current/BareosFdMySQLclass.py"
   when: mysql.stat.exists or sbin_mysql.stat.exists
   tags: [bareos-client, bareos-add-client]
 

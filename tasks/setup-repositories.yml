@@ -4,64 +4,40 @@
   yum_repository:
     name: "bareos_bareos-{{ bareos_version }}"
     description: "bareos_bareos-{{ bareos_version }}"
-    baseurl: "http://download.bareos.org/bareos/release/{{ bareos_version }}/CentOS_{{ ansible_distribution_major_version }}/"
+    baseurl: "https://download.bareos.org/{{ bareos_version }}/EL_{{ ansible_distribution_major_version }}/"
     gpgcheck: yes
-    gpgkey: "http://download.bareos.org/bareos/release/{{ bareos_version }}/CentOS_{{ ansible_distribution_major_version }}/repodata/repomd.xml.key"
+    gpgkey: "https://download.bareos.org/{{ bareos_version }}/EL_{{ ansible_distribution_major_version }}/repodata/repomd.xml.key"
     enabled: yes
   when: ansible_os_family == "RedHat"
   tags: [bareos-client, bareos-add-client]
 
-# Debian <= 9
-- name: Install apt key (Debian <= 9)
+# Debian
+- name: Install apt key (Debian)
   apt_key:
-    url: "http://download.bareos.org/bareos/release/{{ bareos_version }}/Debian_{{ ansible_distribution_major_version }}.0/Release.key"
+    url: "https://download.bareos.org/{{ bareos_version }}/Debian_{{ ansible_distribution_major_version }}/Release.key"
     state: present
-  when: >
-    ansible_distribution == "Debian" and
-    ansible_distribution_major_version != "10"
+  when: ansible_distribution == "Debian"
   tags: [bareos-client, bareos-add-client]
 
-- name: Install Bareos repository (Debian <= 9)
+- name: Install Bareos repository (Debian)
   apt_repository:
-    repo: "deb http://download.bareos.org/bareos/release/{{ bareos_version }}/Debian_{{ ansible_distribution_major_version }}.0 /"
+    repo: "deb https://download.bareos.org/{{ bareos_version }}/Debian_{{ ansible_distribution_major_version }} /"
     state: present
     filename: "bareos"
-  when: >
-    ansible_distribution == "Debian" and
-    ansible_distribution_major_version != "10"
-  tags: [bareos-client, bareos-add-client]
-
-# Debian == 10
-- name: Install apt key (Debian == 10)
-  apt_key:
-    url: "http://download.bareos.org/bareos/release/{{ bareos_version }}/Debian_{{ ansible_distribution_major_version }}/Release.key"
-    state: present
-  when: >
-    ansible_distribution == "Debian" and
-    ansible_distribution_major_version == "10"
-  tags: [bareos-client, bareos-add-client]
-
-- name: Install Bareos repository (Debian == 10)
-  apt_repository:
-    repo: "deb http://download.bareos.org/bareos/release/{{ bareos_version }}/Debian_{{ ansible_distribution_major_version }} /"
-    state: present
-    filename: "bareos"
-  when: >
-    ansible_distribution == "Debian" and
-    ansible_distribution_major_version == "10"
+  when: ansible_distribution == "Debian"
   tags: [bareos-client, bareos-add-client]
 
 # Ubuntu
 - name: Add apt key (Ubuntu)
   apt_key:
-    url: "http://download.bareos.org/bareos/release/{{ bareos_version }}/xUbuntu_{{ ansible_distribution_version }}/Release.key"
+    url: "https://download.bareos.org/{{ bareos_version }}/xUbuntu_{{ ansible_distribution_version }}/Release.key"
     state: present
   when: ansible_distribution == "Ubuntu"
   tags: [bareos-client, bareos-add-client]
 
 - name: Install Bareos repository (Ubuntu)
   apt_repository:
-    repo: "deb http://download.bareos.org/bareos/release/{{ bareos_version }}/xUbuntu_{{ ansible_distribution_version }} /"
+    repo: "deb https://download.bareos.org/{{ bareos_version }}/xUbuntu_{{ ansible_distribution_version }} /"
     state: present
     filename: "bareos"
   when: ansible_distribution == "Ubuntu"

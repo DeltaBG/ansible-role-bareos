@@ -3,7 +3,7 @@
 - name: Install Bareos client packages (RedHat)
   yum:
     name: "bareos-client"
-    state: installed
+    state: latest
   when: >
     ansible_os_family == "RedHat"
   tags: [bareos-client, bareos-add-client]
@@ -11,7 +11,7 @@
 - name: Install Bareos client packages (Debian)
   apt:
     name: "bareos-client"
-    state: present
+    state: latest
     update_cache: yes
   when: >
     ansible_os_family == "Debian"
@@ -29,35 +29,7 @@
   register: sbin_mysql
   tags: [bareos-client, bareos-add-client]
 
-- name: Upload old MySQL plugins (Bareos < 20)
-  copy:
-    src: "{{ item }}"
-    dest: "{{ __bareos_plugins_location }}"
-    mode: 0755
-    owner: root
-    group: root
-  loop:
-    - bareos-19/BareosFdMySQLclass.py
-    - bareos-19/bareos-fd-mysql.py
-  when: >
-    (mysql.stat.exists or sbin_mysql.stat.exists) and
-    (bareos_version != "20" and bareos_version != "current")
-  tags: [bareos-client, bareos-add-client]
-
-- name: Install bareos-filedaemon-python-plugins (Bareos == 20)
-  package:
-    name: "{{ item }}"
-    state: present
-    update_cache: yes
-  loop:
-    - bareos-filedaemon-python2-plugin
-    - bareos-filedaemon-python3-plugin
-  when: >
-    (mysql.stat.exists or sbin_mysql.stat.exists) and
-    bareos_version == "20"
-  tags: [bareos-client, bareos-add-client]
-
-- name: Install bareos-filedaemon-python-plugins (Bareos == current)
+- name: Install bareos-filedaemon-python-plugins
   package:
     name: "{{ item }}"
     state: present
@@ -74,21 +46,20 @@
     path: "{{ __bareos_plugins_location }}"
     state: directory
     mode: 0755
+  when: mysql.stat.exists or sbin_mysql.stat.exists
   tags: [bareos-client, bareos-add-client]
 
-- name: Create plugins directory (Bareos == 20)
+- name: Create plugins directory
   file:
     path: "{{ __bareos_plugins_location }}/bareos_mysql_dump"
     state: directory
     mode: 0755
     owner: "{{ bareos_user_name }}"
     group: "{{ bareos_group_name }}"
-  when: >
-    (mysql.stat.exists or sbin_mysql.stat.exists) and
-    (bareos_version == "20" or bareos_version == "current")
+  when: mysql.stat.exists or sbin_mysql.stat.exists
   tags: [bareos-client, bareos-add-client]
 
-- name: Upload new MySQL plugins (Bareos == 20)
+- name: Upload new MySQL plugins
   copy:
     src: "{{ item }}"
     dest: "{{ __bareos_plugins_location }}/bareos_mysql_dump"
@@ -98,9 +69,7 @@
   loop:
     - "bareos-20/__init__.py"
     - "bareos-20/BareosFdMySQLclass.py"
-  when: >
-    (mysql.stat.exists or sbin_mysql.stat.exists) and
-    (bareos_version == "20" or bareos_version == "current")
+  when: mysql.stat.exists or sbin_mysql.stat.exists
   tags: [bareos-client, bareos-add-client]
 
 - name: Enable and start the services
